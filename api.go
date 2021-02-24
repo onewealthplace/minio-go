@@ -818,6 +818,10 @@ func (c Client) setUserAgent(req *http.Request) {
 // makeTargetURL make a new target url.
 func (c Client) makeTargetURL(bucketName, objectName, bucketLocation string, isVirtualHostStyle bool, queryValues url.Values) (*url.URL, error) {
 	host := c.endpointURL.Host
+	if queryValues.Get("host") != "" {
+		host = queryValues.Get("host")
+		queryValues.Del("host")
+	}
 	// For Amazon S3 endpoint, try to fetch location based endpoint.
 	if s3utils.IsAmazonEndpoint(*c.endpointURL) {
 		if c.s3AccelerateEndpoint != "" && bucketName != "" {
@@ -841,6 +845,10 @@ func (c Client) makeTargetURL(bucketName, objectName, bucketLocation string, isV
 
 	// Save scheme.
 	scheme := c.endpointURL.Scheme
+	if queryValues.Get("scheme") != "" {
+		scheme = queryValues.Get("scheme")
+		queryValues.Del("scheme")
+	}
 
 	// Strip port 80 and 443 so we won't send these ports in Host header.
 	// The reason is that browsers and curl automatically remove :80 and :443
